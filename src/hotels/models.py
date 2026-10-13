@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import CharField
 from django.utils.lorem_ipsum import paragraph
 from rest_framework.exceptions import ValidationError
 
@@ -36,3 +37,9 @@ class Rooms(models.Model):
     def __str__(self):
         return f"Room #{self.pk} - {self.hotel.name}"
 
+
+class Facilities(models.Model):
+    name = CharField(max_length=255)
+
+    def __str__(self):
+        return f"Facility #{self.pk} - {self.name}"
