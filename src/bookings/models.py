@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from src.hotels.models import Rooms
-from src.hotels.validators import validate_positive_price
+from hotels.models import Rooms
+from hotels.validators import validate_positive_price
 
 
 class Bookings(models.Model):
