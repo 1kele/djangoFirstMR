@@ -1,5 +1,3 @@
-from tkinter.constants import CASCADE
-
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -14,7 +12,7 @@ class Bookings(models.Model):
         CANCELLED = "cancelled", "Отменен"
         COMPLETED = "completed", "Завершен"
 
-    room = models.ForeignKey(Rooms, on_delete=CASCADE)
+    room = models.ForeignKey(Rooms, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     price_per_night = models.DecimalField(
