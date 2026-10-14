@@ -23,6 +23,7 @@ class Rooms(models.Model):
     occupancy = models.IntegerField(validators=[validate_positive_occupancy])
     description = models.TextField(blank=True)
     created_at = models.DateField(auto_now=True)
+    facilities = models.ManyToManyField("Facilities", blank=True)
 
     def __str__(self):
         return f"Room #{self.pk} - {self.hotel.name}"
