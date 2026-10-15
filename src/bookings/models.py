@@ -21,9 +21,9 @@ class Bookings(models.Model):
     total_price = models.DecimalField(
         max_digits=12, decimal_places=2, validators=[validate_positive_price]
     )
-    status = models.CharField(choices=Status.choices, default=Status.CREATED)
+    status = models.CharField(choices=Status.choices, max_length=20, default=Status.CREATED)
 
     def clean(self):
         super().clean()
         if self.start_date and self.end_date and self.start_date >= self.end_date:
-            raise ValidationError("Дата выезда должа быть позже даты заезда")
+            raise ValidationError("Дата выезда должна быть позже даты заезда")

@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import CharField
 
 from .validators import validate_positive_occupancy, validate_positive_price, validate_stars_range
 
@@ -22,7 +21,7 @@ class Rooms(models.Model):
     )
     occupancy = models.IntegerField(validators=[validate_positive_occupancy])
     description = models.TextField(blank=True)
-    created_at = models.DateField(auto_now=True)
+    created_at = models.DateField(auto_now_add=True)
     facilities = models.ManyToManyField("Facilities", blank=True)
 
     def __str__(self):
@@ -30,7 +29,7 @@ class Rooms(models.Model):
 
 
 class Facilities(models.Model):
-    name = CharField(max_length=255)
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return f"Facility #{self.pk} - {self.name}"
