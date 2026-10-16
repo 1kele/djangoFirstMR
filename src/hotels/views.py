@@ -1,11 +1,16 @@
-from rest_framework import generics, status
+from rest_framework import generics, mixins, status
 from rest_framework.filters import OrderingFilter
-from rest_framework.generics import get_object_or_404
+from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from hotels.models import Hotels, Rooms
-from hotels.serializers import HotelFilterSerializer, HotelSerializer, RoomSerializer
+from hotels.models import Facilities, Hotels, Rooms
+from hotels.serializers import (
+    FacilitiesSerializer,
+    HotelFilterSerializer,
+    HotelSerializer,
+    RoomSerializer,
+)
 
 
 class HotelsAPIView(APIView):
@@ -76,3 +81,24 @@ class RoomDeleteAPIView(generics.DestroyAPIView):
 
     def get_queryset(self):
         return Rooms.objects.filter(hotel_id=self.kwargs["hotel_id"])
+
+
+class FacilitiesListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Facilities.objects.all()
+    serializer_class = FacilitiesSerializer
+
+
+class FacilitiesUpdateDeletePIView(
+    mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, GenericAPIView
+):
+    queryset = Facilities.objects.all()
+    serializer_class = FacilitiesSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)

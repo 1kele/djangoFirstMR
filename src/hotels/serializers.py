@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Hotels, Rooms
+from .models import Facilities, Hotels, Rooms
 
 
 class HotelSerializer(serializers.ModelSerializer):
@@ -21,3 +21,9 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rooms
         exclude = ["hotel"]
+
+
+class FacilitiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Facilities
+        fields = "__all__"
