@@ -13,7 +13,7 @@ from hotels.serializers import (
 )
 
 
-class HotelsAPIView(APIView):
+class HotelAPIView(APIView):
     def get(self, request):
         serializer_filters = HotelFilterSerializer(data=request.query_params)
         serializer_filters.is_valid(raise_exception=True)
