@@ -1,10 +1,11 @@
-from rest_framework import status
+from rest_framework import generics, status
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from hotels.models import Hotels
-from hotels.serializers import HotelFilterSerializer, HotelSerializer
+from hotels.models import Hotels, Rooms
+from hotels.serializers import HotelFilterSerializer, HotelSerializer, RoomSerializer
 
 
 class HotelsAPIView(APIView):
@@ -50,3 +51,28 @@ class HotelsAPIView(APIView):
         hotel = get_object_or_404(Hotels, pk=pk)
         hotel.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RoomListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Rooms.objects.all()
+    serializer_class = RoomSerializer
+
+    filter_backends = [OrderingFilter]
+    ordering_fields = ["price", "created_at"]
+
+    def get_queryset(self):
+        return Rooms.objects.filter(hotel_id=self.kwargs["hotel_id"])
+
+    def perform_create(self, serializer):
+        pk = self.kwargs.get("hotel_id")
+        serializer.save(hotel_id=pk)
+
+
+class RoomDeleteAPIView(generics.DestroyAPIView):
+    queryset = Rooms.objects.all()
+
+    lookup_field = "id"
+    lookup_url_kwarg = "room_id"
+
+    def get_queryset(self):
+        return Rooms.objects.filter(hotel_id=self.kwargs["hotel_id"])

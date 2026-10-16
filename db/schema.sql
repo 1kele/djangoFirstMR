@@ -15,7 +15,7 @@ occupancy INT not null,
 description TEXT,
 created_at DATE DEFAULT CURRENT_DATE,
 
-FOREIGN KEY (hotel_id) references Hotels(id),
+FOREIGN KEY (hotel_id) references hotels_hotels(id),
 
 constraint chk_room_occupancy
 	check (occupancy > 0),
@@ -30,16 +30,16 @@ name VARCHAR(255)
 );
 
 create table hotels_rooms_facilities(
-room_id INT,
-facility_id INT,
+rooms_id INT,
+facilities_id INT,
 
-primary key(room_id, facility_id),
+primary key(rooms_id, facilities_id),
 
-FOREIGN key (room_id) references Rooms(id) on delete cascade,
-FOREIGN key (facility_id) references Facilities(id) on delete cascade
+FOREIGN key (rooms_id) references hotels_rooms(id) on delete cascade,
+FOREIGN key (facilities_id) references hotels_facilities(id) on delete cascade
 );
 
-create table bookings_booking(
+create table bookings_bookings(
 id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 room_id INT,
 start_date DATE,
@@ -49,7 +49,7 @@ total_price NUMERIC(12,2),
 status TEXT,
 
 
-foreign key (room_id) references Rooms(id) on delete CASCADE,
+foreign key (room_id) references hotels_rooms(id) on delete CASCADE,
 
 constraint chk_booking_dates
 	check (end_date > start_date),

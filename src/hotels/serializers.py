@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Hotels
+from .models import Hotels, Rooms
 
 
 class HotelSerializer(serializers.ModelSerializer):
@@ -15,3 +15,9 @@ class HotelFilterSerializer(serializers.Serializer):
     address = serializers.CharField(required=False)
     founding_date = serializers.DateField(required=False)
     stars = serializers.IntegerField(required=False)
+
+
+class RoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rooms
+        exclude = ["hotel"]
