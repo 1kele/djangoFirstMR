@@ -73,8 +73,9 @@ class RoomListCreateAPIView(generics.ListCreateAPIView):
         serializer.save(hotel_id=pk)
 
 
-class RoomDeleteAPIView(generics.DestroyAPIView):
+class RoomDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Rooms.objects.all()
+    serializer_class = RoomSerializer
 
     lookup_field = "id"
     lookup_url_kwarg = "room_id"
