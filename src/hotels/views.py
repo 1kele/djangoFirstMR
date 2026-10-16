@@ -84,12 +84,12 @@ class RoomDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
         return Rooms.objects.filter(hotel_id=self.kwargs["hotel_id"])
 
 
-class FacilitiesListCreateAPIView(generics.ListCreateAPIView):
+class FacilityListCreateAPIView(generics.ListCreateAPIView):
     queryset = Facilities.objects.all()
     serializer_class = FacilitiesSerializer
 
 
-class FacilitiesUpdateDeletePIView(
+class FacilityUpdateDeletePIView(
     mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, GenericAPIView
 ):
     queryset = Facilities.objects.all()
