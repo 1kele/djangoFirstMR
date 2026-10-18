@@ -1,4 +1,5 @@
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 
 from bookings.models import Bookings
 from bookings.serializer import BookingCreateSerializer, BookingSerializer
@@ -18,6 +19,14 @@ class BookingCreateListAPIView(generics.ListCreateAPIView):
         booking_data = add_new_booking(serializer.validated_data)
 
         serializer.save(**booking_data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_create(serializer)
+
+        return Response({"id": serializer.instance.id}, status=status.HTTP_201_CREATED)
 
 
 class BookingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
