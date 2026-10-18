@@ -13,16 +13,10 @@ from hotels.serializers import (
 )
 
 
-class HotelAPIView(APIView):
+class HotelListCreateAPIView(APIView):
     def get(self, request):
-        serializer_filters = HotelFilterSerializer(data=request.query_params)
-        serializer_filters.is_valid(raise_exception=True)
-
-        filters = serializer_filters.validated_data
-
-        hotel = Hotels.objects.filter(**filters)
-
-        serializer = HotelSerializer(hotel, many=True)
+        hotels = Hotels.objects.all()
+        serializer = HotelSerializer(hotels, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -33,8 +27,22 @@ class HotelAPIView(APIView):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def put(self, request, pk):
-        hotel = get_object_or_404(Hotels, pk=pk)
+
+class HotelDetailAPIView(APIView):
+    def get(self, request, hotel_id):
+        serializer_filters = HotelFilterSerializer(data=request.query_params)
+        serializer_filters.is_valid(raise_exception=True)
+
+        filters = serializer_filters.validated_data
+
+        hotel = Hotels.objects.filter(**filters, id=hotel_id)
+
+        serializer = HotelSerializer(hotel, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, hotel_id):
+        hotel = get_object_or_404(Hotels, pk=hotel_id)
         serializer = HotelSerializer(
             hotel,
             data=request.data,
@@ -44,16 +52,16 @@ class HotelAPIView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, pk):
-        hotel = get_object_or_404(Hotels, pk=pk)
+    def patch(self, request, hotel_id):
+        hotel = get_object_or_404(Hotels, pk=hotel_id)
         serializer = HotelSerializer(hotel, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def delete(self, request, pk):
-        hotel = get_object_or_404(Hotels, pk=pk)
+    def delete(self, request, hotel_id):
+        hotel = get_object_or_404(Hotels, pk=hotel_id)
         hotel.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
