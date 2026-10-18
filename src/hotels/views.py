@@ -72,6 +72,14 @@ class RoomListCreateAPIView(generics.ListCreateAPIView):
         pk = self.kwargs.get("hotel_id")
         serializer.save(hotel_id=pk)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_create(serializer)
+
+        return Response({"id": serializer.instance.id}, status=status.HTTP_201_CREATED)
+
 
 class RoomDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Rooms.objects.all()
