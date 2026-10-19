@@ -4,7 +4,7 @@ import pytest
 from rest_framework.test import APIClient
 from django.db import connection
 
-from hotels.models import Hotels, Rooms
+from hotels.models import Hotels, Rooms, Facilities
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -28,5 +28,12 @@ def hotel():
 
 
 @pytest.fixture
-def room(hotel):
-    return Rooms.objects.create(hotel_id=hotel.id, price=10_000, occupancy=2)
+def room(hotel, facility):
+    room = Rooms.objects.create(hotel_id=hotel.id, price=10_000, occupancy=2)
+    room.facilities.add(facility.id)
+    return room
+
+@pytest.fixture
+def facility():
+    Facilities.objects.create(name="Air Conditioner")
+    return Facilities.objects.create(name="Wi-Fi")
