@@ -4,7 +4,7 @@ from .validators import validate_positive_occupancy, validate_positive_price, va
 
 
 class Hotels(models.Model):
-    name = models.CharField(max_length=255, verbose_name="Название")
+    name = models.CharField(max_length=255, unique=True, verbose_name="Название")
     city = models.CharField(max_length=100, verbose_name="Город")
     address = models.TextField(verbose_name="Адресс", blank=True)
     founding_date = models.DateField(verbose_name="Дата основания")
