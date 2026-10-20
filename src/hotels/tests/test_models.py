@@ -1,6 +1,7 @@
 from django.db import IntegrityError
 import pytest
 
+from bookings.models import Bookings
 from hotels.models import Facilities, Hotels, Rooms
 
 
@@ -42,3 +43,9 @@ def test_check_unique():
 
     with pytest.raises(IntegrityError):
         Hotels.objects.create(name="Test Hotel", city="sdfsf", founding_date="2010-01-01", stars=5)
+
+
+@pytest.mark.django_db
+def test_delete_room_cascade(room, booking):
+    room.delete()
+    assert Bookings.objects.count() == 0

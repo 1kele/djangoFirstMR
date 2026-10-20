@@ -4,6 +4,7 @@ import pytest
 from rest_framework.test import APIClient
 from django.db import connection
 
+from bookings.models import Bookings
 from hotels.models import Hotels, Rooms, Facilities
 
 
@@ -20,6 +21,7 @@ def create_test_schema(django_db_setup, django_db_blocker):
 def api_client():
     return APIClient()
 
+
 @pytest.fixture
 def hotel():
     return Hotels.objects.create(
@@ -33,7 +35,17 @@ def room(hotel, facility):
     room.facilities.add(facility.id)
     return room
 
+
 @pytest.fixture
 def facility():
     Facilities.objects.create(name="Air Conditioner")
     return Facilities.objects.create(name="Wi-Fi")
+
+
+@pytest.fixture
+def booking(room):
+    return Bookings.objects.create(
+        room_id=room.id,
+        start_date="2026-10-10",
+        end_date="2026-10-15",
+    )
