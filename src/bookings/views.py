@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from bookings.models import Bookings
 from bookings.serializer import BookingCreateSerializer, BookingSerializer
-from services import add_new_booking
+from bookings.services import add_new_booking, update_booking
 
 
 class BookingCreateListAPIView(generics.ListCreateAPIView):
@@ -32,6 +32,13 @@ class BookingCreateListAPIView(generics.ListCreateAPIView):
 class BookingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Bookings.objects.all()
     serializer_class = BookingSerializer
+
+    def perform_update(self, serializer):
+        if serializer.instance.is_actual_sensitive_changes(serializer.validated_data):
+            booking_data = update_booking(serializer.instance, serializer.validated_data)
+            serializer.save(**booking_data)
+        else:
+            serializer.save()
 
 
 class BookingFromRoomAPIView(generics.ListAPIView):

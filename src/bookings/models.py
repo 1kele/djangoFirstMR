@@ -27,3 +27,17 @@ class Bookings(models.Model):
         super().clean()
         if self.start_date and self.end_date and self.start_date >= self.end_date:
             raise ValidationError("Дата выезда должна быть позже даты заезда")
+
+    SENSITIVE_FIELDS = {"room", "start_date", "end_date", "price_per_night"}
+
+    def is_actual_sensitive_changes(self, validate_data: dict) -> bool:
+        changing_fields = validate_data.keys() & self.SENSITIVE_FIELDS
+
+        for field in changing_fields:
+            old_data = getattr(self, field)
+            new_data = validate_data[field]
+
+            if old_data != new_data:
+                return True
+
+        return False
