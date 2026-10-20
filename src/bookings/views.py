@@ -21,12 +21,9 @@ class BookingCreateListAPIView(generics.ListCreateAPIView):
         serializer.save(**booking_data)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        response = super().create(request, *args, **kwargs)
 
-        self.perform_create(serializer)
-
-        return Response({"id": serializer.instance.id}, status=status.HTTP_201_CREATED)
+        return Response({"id": response.data["id"]}, status=status.HTTP_201_CREATED)
 
 
 class BookingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -39,6 +36,11 @@ class BookingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
             serializer.save(**booking_data)
         else:
             serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+
+        return Response({"id": response.data["id"]}, status=status.HTTP_200_OK)
 
 
 class BookingFromRoomAPIView(generics.ListAPIView):
