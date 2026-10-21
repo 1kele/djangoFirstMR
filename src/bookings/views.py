@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import generics, status
 from rest_framework.response import Response
 
@@ -16,9 +17,10 @@ class BookingCreateListAPIView(generics.ListCreateAPIView):
         return BookingSerializer
 
     def perform_create(self, serializer):
-        booking_data = add_new_booking(serializer.validated_data)
+        with transaction.atomic():
+            booking_data = add_new_booking(serializer.validated_data)
 
-        serializer.save(**booking_data)
+            serializer.save(**booking_data)
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -31,11 +33,12 @@ class BookingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BookingSerializer
 
     def perform_update(self, serializer):
-        if serializer.instance.is_actual_sensitive_changes(serializer.validated_data):
-            booking_data = update_booking(serializer.instance, serializer.validated_data)
-            serializer.save(**booking_data)
-        else:
-            serializer.save()
+        with transaction.atomic():
+            if serializer.instance.is_actual_sensitive_changes(serializer.validated_data):
+                booking_data = update_booking(serializer.instance, serializer.validated_data)
+                serializer.save(**booking_data)
+            else:
+                serializer.save()
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)

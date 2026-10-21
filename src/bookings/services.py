@@ -1,11 +1,12 @@
 from django.core.exceptions import ValidationError
 
 from bookings.models import Bookings
+from hotels.models import Rooms
 
 
 def add_new_booking(input_data: dict) -> dict:
-
     room = input_data["room"]
+    room = Rooms.objects.select_for_update().get(pk=room.id)
     start_date = input_data["start_date"]
     end_date = input_data["end_date"]
 
@@ -34,6 +35,7 @@ def add_new_booking(input_data: dict) -> dict:
 def update_booking(old_data: Bookings, new_data: dict) -> dict:
     pk = old_data.pk
     room = new_data.get("room", old_data.room)
+    room = Rooms.objects.select_for_update().get(pk=room.id)
     start_date = new_data.get("start_date", old_data.start_date)
     end_date = new_data.get("end_date", old_data.end_date)
     price = new_data.get("price_per_night", room.price)
