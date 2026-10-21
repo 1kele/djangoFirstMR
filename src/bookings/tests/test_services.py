@@ -1,7 +1,7 @@
 from datetime import date
 
-from django.core.exceptions import ValidationError
 import pytest
+from rest_framework.exceptions import ValidationError
 
 from bookings.models import Bookings
 from bookings.services import add_new_booking

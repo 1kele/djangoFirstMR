@@ -1,7 +1,10 @@
-from django.core.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError
 
 from bookings.models import Bookings
+from config.logging_setup import setup_logging
 from hotels.models import Rooms
+
+logger = setup_logging()
 
 
 def add_new_booking(input_data: dict) -> dict:
@@ -18,6 +21,12 @@ def add_new_booking(input_data: dict) -> dict:
     ).exists()
 
     if booking_exists:
+        logger.warning(
+            "Booking rejected: room_id={}, start_date={}, end_date={}",
+            room.id,
+            start_date,
+            end_date,
+        )
         raise ValidationError("Данный номер уже забронирован на выбранную вами дату")
 
     price = room.price
@@ -52,6 +61,12 @@ def update_booking(old_data: Bookings, new_data: dict) -> dict:
     )
 
     if booking_exists:
+        logger.warning(
+            "Booking updating rejected: room_id={}, start_date={}, end_date={}",
+            room.id,
+            start_date,
+            end_date,
+        )
         raise ValidationError("Данный номер уже забронирован на выбранную вами дату")
 
     total_price = price * (end_date - start_date).days
@@ -61,5 +76,4 @@ def update_booking(old_data: Bookings, new_data: dict) -> dict:
         "total_price": total_price,
         "status": Bookings.Status.CREATED,
     }
-
     return booking_data

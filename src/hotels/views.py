@@ -4,6 +4,7 @@ from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config.logging_setup import setup_logging
 from hotels.models import Facilities, Hotels, Rooms
 from hotels.serializers import (
     FacilitiesSerializer,
@@ -11,6 +12,8 @@ from hotels.serializers import (
     HotelSerializer,
     RoomSerializer,
 )
+
+logger = setup_logging()
 
 
 class HotelListCreateAPIView(APIView):
@@ -23,7 +26,8 @@ class HotelListCreateAPIView(APIView):
     def post(self, request):
         serializer = HotelSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        hotel = serializer.save()
+        logger.info("Hotel created: hotel_id: {}, name: {}", hotel.id, hotel.name)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -48,7 +52,8 @@ class HotelDetailAPIView(APIView):
             data=request.data,
         )
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        hotel = serializer.save()
+        logger.info("Hotel fully updated: hotel_id: {}, name: {}", hotel.id, hotel.name)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -56,13 +61,17 @@ class HotelDetailAPIView(APIView):
         hotel = get_object_or_404(Hotels, pk=hotel_id)
         serializer = HotelSerializer(hotel, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        hotel = serializer.save()
+        logger.info("Hotel updated: hotel_id: {}, name: {}", hotel.id, hotel.name)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, hotel_id):
         hotel = get_object_or_404(Hotels, pk=hotel_id)
+        hotel_id = hotel.id
         hotel.delete()
+        logger.info("Hotel deleted: hotel_id: {}", hotel_id)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -78,7 +87,8 @@ class RoomListCreateAPIView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         pk = self.kwargs.get("hotel_id")
-        serializer.save(hotel_id=pk)
+        room = serializer.save(hotel_id=pk)
+        logger.info("Room created: room_id: {}, hotel_id: {}", room.id, room.hotel_id)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -99,10 +109,28 @@ class RoomDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Rooms.objects.filter(hotel_id=self.kwargs["hotel_id"])
 
+    def perform_update(self, serializer):
+        room = serializer.save()
+
+        logger.info("Room updated: room_id: {}, hotel_id: {}", room.id, room.hotel_id)
+
+    def perform_destroy(self, instance):
+        room_id = instance.id
+        hotel_id = instance.hotel_id
+
+        instance.delete()
+
+        logger.info("Room deleted: room_id: {}, hotel_id: {}", room_id, hotel_id)
+
 
 class FacilityListCreateAPIView(generics.ListCreateAPIView):
     queryset = Facilities.objects.all()
     serializer_class = FacilitiesSerializer
+
+    def perform_create(self, serializer):
+        facility = serializer.save()
+
+        logger.info("Facility created: id: {}, name: {}", facility.id, facility.name)
 
 
 class FacilityUpdateDeletePIView(
@@ -119,3 +147,16 @@ class FacilityUpdateDeletePIView(
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+    def perform_update(self, serializer):
+        facility = serializer.save()
+
+        logger.info("Facility updated: facility_id: {}, name: {}", facility.id, facility.name)
+
+    def perform_destroy(self, instance):
+        facility_id = instance.id
+        name = instance.name
+
+        instance.delete()
+
+        logger.info("Facility deleted: facility_id: {}, name: {}", facility_id, name)

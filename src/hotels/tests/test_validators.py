@@ -1,5 +1,5 @@
-from django.core.exceptions import ValidationError
 import pytest
+from rest_framework.exceptions import ValidationError
 
 from hotels.validators import (
     validate_positive_occupancy,

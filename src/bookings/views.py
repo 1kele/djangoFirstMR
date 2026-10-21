@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from bookings.models import Bookings
 from bookings.serializer import BookingCreateSerializer, BookingSerializer
 from bookings.services import add_new_booking, update_booking
+from config.logging_setup import setup_logging
+
+logger = setup_logging()
 
 
 class BookingCreateListAPIView(generics.ListCreateAPIView):
@@ -20,7 +23,9 @@ class BookingCreateListAPIView(generics.ListCreateAPIView):
         with transaction.atomic():
             booking_data = add_new_booking(serializer.validated_data)
 
-            serializer.save(**booking_data)
+            booking = serializer.save(**booking_data)
+
+        logger.info("Booking created: booking_id={}, room_id={}", booking.id, booking.room_id)
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -36,14 +41,24 @@ class BookingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         with transaction.atomic():
             if serializer.instance.is_actual_sensitive_changes(serializer.validated_data):
                 booking_data = update_booking(serializer.instance, serializer.validated_data)
-                serializer.save(**booking_data)
+                booking = serializer.save(**booking_data)
             else:
-                serializer.save()
+                booking = serializer.save()
+
+        logger.info("Booking updated: booking_id={}, room_id={}", booking.id, booking.room_id)
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
 
         return Response({"id": response.data["id"]}, status=status.HTTP_200_OK)
+
+    def perform_destroy(self, instance):
+        booking_id = instance.id
+        room_id = instance.room_id
+
+        instance.delete()
+
+        logger.info("Booking deleted: booking_id: {}, room_id: {}", booking_id, room_id)
 
 
 class BookingFromRoomAPIView(generics.ListAPIView):
