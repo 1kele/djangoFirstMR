@@ -18,13 +18,13 @@ class BookingCreateListAPIView(generics.ListCreateAPIView):
 
         return BookingSerializer
 
-    def perform_create(self, serializer):
-        add_new_booking(serializer.validated_data)
-
     def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        return Response({"id": response.data["id"]}, status=status.HTTP_201_CREATED)
+        booking = add_new_booking(serializer.validated_data)
+
+        return Response({"id": booking.id}, status=status.HTTP_201_CREATED)
 
 
 class BookingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):

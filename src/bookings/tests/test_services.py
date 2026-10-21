@@ -50,6 +50,6 @@ def test_valid_new_booking(room, booking, start_date, end_date):
     result = add_new_booking(input_data)
     days = (end_date - start_date).days
 
-    assert result["price_per_night"] == room.price
-    assert result["total_price"] == days * room.price
-    assert result["status"] == Bookings.Status.CREATED
+    assert result.price_per_night == room.price
+    assert result.total_price == days * room.price
+    assert result.status == Bookings.Status.CREATED
