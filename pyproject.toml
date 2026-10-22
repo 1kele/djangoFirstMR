@@ -3,20 +3,24 @@ name = "djangofirstmr"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "bandit>=1.9.4",
     "django",
     "djangorestframework",
     "drf-spectacular>=0.30.0",
     "loguru>=0.7.3",
+    "psycopg[binary]>=3.3.6",
+    "python-dotenv>=1.2.4",
+    "typing-extensions>=4.16.0",
+]
+
+[dependency-groups]
+dev = [
+    "bandit>=1.9.4",
     "mypy>=2.4.0",
     "pre-commit>=4.7.0",
-    "psycopg[binary]>=3.3.6",
     "pytest>=9.1.1",
     "pytest-django>=4.14.0",
-    "python-dotenv>=1.2.4",
     "radon>=6.0.1",
     "ruff>=0.17.0",
-    "typing-extensions>=4.16.0",
 ]
 
 [tool.uv]
