@@ -1,11 +1,11 @@
 from pathlib import Path
 
+from django.db import connection
 import pytest
 from rest_framework.test import APIClient
-from django.db import connection
 
 from bookings.models import Bookings
-from hotels.models import Hotels, Rooms, Facilities
+from hotels.models import Facilities, Hotels, Rooms
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -13,9 +13,9 @@ def create_test_schema(django_db_setup, django_db_blocker):
     schema_path = Path("db/schema.sql")
     sql = schema_path.read_text()
 
-    with django_db_blocker.unblock():
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
+    with django_db_blocker.unblock(), connection.cursor() as cursor:
+        cursor.execute(sql)
+
 
 @pytest.fixture
 def api_client():
