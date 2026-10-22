@@ -30,10 +30,10 @@ help:
 # Ruff: линт и форматирование
 # ===============================
 lint:
-	poetry run ruff check $(PY_SRCS) --fix
+	uv run ruff check $(PY_SRCS) --fix
 
 fmt:
-	poetry run ruff format $(PY_SRCS)
+	uv run ruff format $(PY_SRCS)
 
 # ===============================
 # Mypy: проверка типов
@@ -41,7 +41,7 @@ fmt:
 # ===============================
 
 type:
-	poetry run mypy $(PY_SRCS)
+	uv run mypy $(PY_SRCS)
 
 # ===============================
 # Bandit: анализ безопасности
@@ -49,16 +49,16 @@ type:
 security:
 # -r: рекурсивно, -lll: максимум строгости вывода,
 # -x: исключения (подправьте под проект)
-	poetry run bandit -r src -lll -x .venv,venv,build,dist,migrations
+	uv run bandit -r src -lll -x .venv,venv,build,dist,migrations
 
 # ===============================
 # Radon: метрики
 # ===============================
 # Цикломатическая сложность: подробный вывод (-s), среднее (-a)
 cc:
-	poetry run radon cc -s -a $(PY_SRCS)
+	uv run radon cc -s -a $(PY_SRCS)
 	@# QUALITY GATE: проваливаем, если есть элементы со сложностью E/F (проверяем букву после дефиса)
-	@if poetry run radon cc -s $(PY_SRCS) | grep -E '\- [EF] '; then \
+	@if uv run radon cc -s $(PY_SRCS) | grep -E '\- [EF] '; then \
 		echo "❌ Radon CC: обнаружены функции со сложностью E/F"; \
 		exit 1; \
 	else \
@@ -66,9 +66,9 @@ cc:
 	fi
 
 # Индекс поддерживаемостиcc:
-	poetry run radon cc -s -a $(PY_SRCS)
+	uv run radon cc -s -a $(PY_SRCS)
 	@# QUALITY GATE: проваливаем, если есть элементы со сложностью E/F (проверяем букву после дефиса)
-	@if poetry run radon cc -s $(PY_SRCS) | grep -E '\- [EF] '; then \
+	@if uv run radon cc -s $(PY_SRCS) | grep -E '\- [EF] '; then \
 		echo "❌ Radon CC: обнаружены функции со сложностью E/F"; \
 		exit 1; \
 	else \
@@ -78,14 +78,14 @@ cc:
 # Индекс поддерживаемости
 mi:
 	@# Встроенная проверка radon: провалит сборку, только если файл упадет ниже отличного класса A
-	poetry run radon mi -s -m A $(PY_SRCS)
+	uv run radon mi -s -m A $(PY_SRCS)
 	@echo "✅ Radon MI: все файлы соответствуют наивысшему классу поддерживаемости (A)"
 # Метрика халстеда
 hal:
-	poetry run radon hal $(PY_SRCS)
+	uv run radon hal $(PY_SRCS)
 # Метрика Raw
 raw:
-	poetry run radon raw $(PY_SRCS)
+	uv run radon raw $(PY_SRCS)
 
 # ===============================
 # Комплексные цели
