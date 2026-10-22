@@ -81,11 +81,11 @@ Room ↔ Facility
 - Docker Compose
 - Uvicorn
 - pytest
-- pytest-django
 - Loguru
 - Ruff
 - mypy
 - drf-spectacular / OpenAPI / Swagger UI
+- GitHub Actions - CI для автоматической проверки проекта при push
 
 ## Запуск проекта
 
